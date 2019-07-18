@@ -70,14 +70,14 @@ class Board:
             if (i + j)%2 == 0:
                 return
             if (i,j) in self.active.FigureList:
-                #self.Highlight(1)
+                if self.activeFigure:
+                    self.Highlight(1)
                 self.activeFigure = self.active.FigureList[(i,j)]
                 self.Highlight(0)
             else:
                 if self.activeFigure:
                     stepRes =  self.activeFigure.MakeStep(i,j)
                     if stepRes:
-                        print(self.activeFigure.CheckWays())
                         if stepRes == 1 or (self.activeFigure.CheckWays() == []):                 
                             self.EndStep()
                             self.activeFigure = None
@@ -110,10 +110,8 @@ class Board:
         if mode == 0:
             colors = self.bg2
         else:
-            colors = self.colors
-          
+            colors = self.colors         
         color = colors[self.activeFigure.color]
-        print(color)  
         self.canvas.itemconfig(self.activeFigure.id, fill = color)
                         
 class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
@@ -126,8 +124,7 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
         self.vip = False
         self.color = color
         self.id = self.Board.canvas.create_oval(self.D*i + self.r, self.D*j + self.r,
-                  self.D*(i + 1) - self.r,self.D*(j + 1) - self.r,fill = self.Board.colors[self.color])
-        
+                  self.D*(i + 1) - self.r,self.D*(j + 1) - self.r,fill = self.Board.colors[self.color])        
     def Move(self,x,y):
         self.Board.canvas.delete(self.id)
         self.id = self.Board.canvas.create_oval(self.D*x + self.r, self.D*y + self.r,
@@ -153,6 +150,7 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
             if self.Board.CheckCell(x1,y1 ) == abs(1 - self.color):
                 self.Board.Players[abs(1 - self.color)].DeleteFigure(x1,y1)
                 self.Move(x,y)
+                self.Board.Highlight(0)
                 return 2
 
     def CheckWays(self):
