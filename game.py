@@ -194,10 +194,24 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
         if positions == [-1 for i in range(abs(self.x - x))]:
             self.Move(x,y)
             return 1
-
-            
-            
-        
+        k = 0
+        j = 0
+        i = 1
+        for p in positions:
+            xx = (p == t)
+            if xx == 1:
+                k = k + 1
+                j = i
+            i += 1    
+        if k == 1:
+            x1 = self.x + dx*j
+            y1 = self.y + dy*j
+            self.Board.Players[t].DeleteFigure(x1,y1)
+            self.Move(x,y)
+            self.Board.Highlight(0)
+            self.Board.flag = False
+            return 2
+                    
     # Check possible moves after hiting enemy figure
     def CheckWays(self):
         routes = [(-2,-2),(2,-2),(-2,2),(2,2)]
