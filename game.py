@@ -32,12 +32,14 @@ class Board:
         self.active = None    # say, who is going now
         self.activeFigure = None
         self.gameOn = 1
+        self.flag = True
         self.NewGame(0)
         
     def NewGame(self, mode = 1):  # mode = 1 says that one game left, and we need to clean board
         if mode:                  # and we need to clean board
             self.ClearBoard()
-        self.gameOn = 1    
+        self.gameOn = 1
+        self.flag = True
         self.Player1 = Player(self,0)
         self.Player2 = Player(self,1)
         self.Players = [self.Player1,self.Player2]
@@ -70,6 +72,8 @@ class Board:
             if (i + j)%2 == 0:
                 return
             if (i,j) in self.active.FigureList:
+                if not self.flag:
+                    return
                 if self.activeFigure:
                     self.Highlight(1)
                 self.activeFigure = self.active.FigureList[(i,j)]
@@ -92,6 +96,7 @@ class Board:
             
     def EndStep(self):
         self.Highlight(1)
+        self.flag = True
         if self.Player1.rest == 0:
             print('Black wins')
             self.gameOn = 0
@@ -151,6 +156,7 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
                 self.Board.Players[abs(1 - self.color)].DeleteFigure(x1,y1)
                 self.Move(x,y)
                 self.Board.Highlight(0)
+                self.Board.flag = False
                 return 2
 
     def CheckWays(self):
@@ -166,8 +172,7 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
                 if (x2,y2) in self.Board.Players[abs(1 - self.color)].FigureList:
                     ways.append((x1,y1))
         return ways            
-        
-                
+                        
 class Player:    #color = 0 - for white, 1 - for black
     def __init__(self,Board,color):
         self.color = color
