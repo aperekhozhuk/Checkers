@@ -155,6 +155,8 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
         isFree = self.Board.CheckCell(x,y) # checking, is cell settled by any player     
         if isFree >= 0 : # if cell settled by any figure - step impossible
             return 0
+        if self.vip:
+            return self.MakeVipStep(x,y)
         # if cell is neighbour - just move
         if abs(self.x - x) == 1 and (y - self.y) == 2*self.color - 1:
             self.Move(x,y)
@@ -169,6 +171,33 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
                 self.Board.Highlight(0)
                 self.Board.flag = False
                 return 2
+
+    def MakeVipStep(self,x,y):
+        if abs(self.x - x) != abs(self.y - y):
+            return
+        if (x - self.x) > 0:
+            dx = 1
+        else:
+            dx = -1
+        if (y - self.y) > 0:
+            dy = 1
+        else:
+            dy = -1
+        t = abs(1 - self.color)          
+        positions = []
+        for i in range(1,abs(self.x - x) + 1):
+            pi = self.Board.CheckCell(self.x + i*dx, self.y + i*dy)
+            if pi == self.color:
+                return
+            positions.append(pi)
+        print(positions)    
+        if positions == [-1 for i in range(abs(self.x - x))]:
+            self.Move(x,y)
+            return 1
+
+            
+            
+        
     # Check possible moves after hiting enemy figure
     def CheckWays(self):
         routes = [(-2,-2),(2,-2),(-2,2),(2,2)]
