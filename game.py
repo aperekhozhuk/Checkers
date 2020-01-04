@@ -134,7 +134,7 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
     def __init__(self,Board,i,j,color):
         self.Board = Board
         self.D = Board.cellSize
-        self.r = self.D//10
+        self.r = self.D//6
         self.x = i
         self.y = j
         self.vip = False   # True - if figure is Queen
@@ -144,11 +144,11 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
 
     def Move(self,x,y):  # just moving figure to new position
         self.Board.canvas.delete(self.id)
-        self.id = self.Board.canvas.create_oval(self.D*x + self.r, self.D*y + self.r,
-                  self.D*(x + 1) - self.r,self.D*(y + 1) - self.r,fill = self.Board.colors[self.color])
-
         if y == 0 or y == 7:
             self.vip = True    
+            self.r = self.r // 6
+        self.id = self.Board.canvas.create_oval(self.D*x + self.r, self.D*y + self.r,
+                  self.D*(x + 1) - self.r,self.D*(y + 1) - self.r,fill = self.Board.colors[self.color])
         self.Board.Players[self.color].FigureList[(x,y)] = self
         del self.Board.Players[self.color].FigureList[(self.x,self.y)]
         self.x = x
