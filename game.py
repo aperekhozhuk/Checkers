@@ -14,6 +14,7 @@ class Board:
         self.canvas.pack()
         self.canvas.bind('<Button-1>',self.Click())
         self.root.bind('<Return>',self.NewGameEvent())
+        self.alert = None     # Place, where will win alert show
         # Board drawing
         self.bg = ('#f9efeb','#c65c39')  # colors for cells background
         self.bg2 = ('#dbcece','#611010') # colors for highlighting active figure
@@ -45,6 +46,8 @@ class Board:
         self.Players = [self.Player1,self.Player2]
         self.active = self.Player1
         self.activeFigure = None
+        self.canvas.delete(self.alert)
+        self.root.mainloop()
  
     def NewGameEvent(self):   # Method for restarting game by pressing Enter
         def _NewGameEvent(event):
@@ -124,8 +127,8 @@ class Board:
             alert = 'Player2'
         if alert:
             alert = alert + ' wins!!!!'
-            self.canvas.create_text(self.size//4,self.size//2, fill = 'red',
-                                    font="Times 20 italic bold", text = alert)
+            self.alert = self.canvas.create_text(self.size//4,self.size//2, fill = 'Blue',
+                                    font="Times 40 italic bold", text = alert)
         
 class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
     def __init__(self,Board,i,j,color):
@@ -190,7 +193,6 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
             if pi == self.color:
                 return
             positions.append(pi)
-        print(positions)    
         if positions == [-1 for i in range(abs(self.x - x))]:
             self.Move(x,y)
             return 1
@@ -215,6 +217,12 @@ class Figure:    # i,j - position on board, color = 0 - for white, 1 - for black
     # Check possible moves after hiting enemy figure
     def CheckWays(self):
         routes = [(-2,-2),(2,-2),(-2,2),(2,2)]
+        if self.vip:
+            for x in range(3,8):
+                for y in range(3,8):
+                    for vx in [-1, 1]:
+                        for vy in [-1,1]:
+                            routes.append((x*vx,y*vy))
         ways = []
         x,y = self.x,self.y
         for v in routes:
